@@ -1,0 +1,13 @@
+﻿# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/contentModel.xml
+/.idea.3540_Final_Proj.iml
+/modules.xml
+/projectSettingsUpdater.xml
+# Datasource local storage ignored files
+/../../../../../../../../../../../../../:\Users\Ashraf Bade\Desktop\WORK\CS 3540\Unity Projects\Final Project 2\FP_3540\3540_Final_Proj\.idea\.idea.3540_Final_Proj\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
