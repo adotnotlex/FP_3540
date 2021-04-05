@@ -8,49 +8,56 @@ using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour
 {
-
     public enum FSMStates
     {
-        Patrol, Chase, Attack, Dead, RangedAttack
+        Idle,
+        Patrol,
+        Chase,
+        Attack,
+        Dead,
+        RangedAttack
     }
 
     public enum AttackType
     {
-        Melee, Ranged
+        Melee,
+        Ranged
     }
 
     public FSMStates currentState;
     private Animator anim;
     public AttackType enemyType = AttackType.Melee;
-    
+
     // Enemy Stats
     private EnemyHealth enemyHealth;
     private int health;
     public float enemySpeed = 5;
-    public float attackDistance = 5;
+    public float attackDistance = 2;
     public float chaseDistance = 10;
-    
+
     // Melee Enemy Variables
     public GameObject weapon;
-    private Collider weaponEdge;
-    public int enemyMeleeDamage = 30;
+    // private Collider weaponEdge;
+    public int enemyMeleeDamage = 1;
     public AudioClip hitFX;
-    
+
     // Ranged Enemy Variables
     public AudioClip shootFX;
     public GameObject arrows;
     public float rangedAttackDistance = 15;
+
     public float rangedChaseDistance = 25;
+
     // public GameObject wandTip;
     public float shootRate = 2;
     private float elapsedTime = 0;
-    
+
     // Enemy Navigation
     private Vector3 nextDestination;
     private int currentDestinationIndex = 0;
     private NavMeshAgent agent;
     private GameObject[] wanderPoints;
-    
+
     // Target Information
     private float distanceToPlayer;
     public GameObject player;
@@ -59,11 +66,10 @@ public class EnemyAI : MonoBehaviour
     public GameObject deadVFX;
     private Transform deadTransform;
     private bool isDead;
-    
+
     // Enemy Vision
     public Transform enemyEyes;
     public float FOV = 45f;
-
 
 
     // Start is called before the first frame update
@@ -71,13 +77,13 @@ public class EnemyAI : MonoBehaviour
     {
         isDead = false;
         player = GameObject.FindGameObjectWithTag("Player");
-        wanderPoints = GameObject.FindGameObjectsWithTag("Wanderpoint");
+        wanderPoints = GameObject.FindGameObjectsWithTag("WanderPoint");
         anim = GetComponent<Animator>();
         // wandTip = GameObject.FindGameObjectWithTag("WandTip");
         enemyHealth = GetComponent<EnemyHealth>();
         health = enemyHealth.currentHealth;
         agent = GetComponent<NavMeshAgent>();
-        weaponEdge = weapon.GetComponent<Collider>();
+        // weaponEdge = weapon.GetComponent<Collider>();
         Initialize();
     }
 
@@ -87,38 +93,23 @@ public class EnemyAI : MonoBehaviour
         distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
         health = enemyHealth.currentHealth;
 
-        if (enemyType == AttackType.Melee)
+
+        switch (currentState)
         {
-            switch (currentState)
-            {
-                case FSMStates.Patrol:
-                    UpdatePatrolState();
-                    break;
-                case FSMStates.Chase:
-                    UpdateChaseState();
-                    break;
-                case FSMStates.Attack:
-                    UpdateAttackState();
-                    break;
-                case FSMStates.Dead:
-                    UpdateDeadState();
-                    break;
-            }
+            case FSMStates.Patrol:
+                UpdatePatrolState();
+                break;
+            case FSMStates.Chase:
+                UpdateChaseState();
+                break;
+            case FSMStates.Attack:
+                UpdateAttackState();
+                break;
+            case FSMStates.Dead:
+                UpdateDeadState();
+                break;
         }
 
-        if (enemyType == AttackType.Ranged)
-        {
-            switch (currentState)
-            {
-                case FSMStates.Patrol:
-                    UpdatePatrolState();
-                    break;
-                case FSMStates.RangedAttack:
-                    UpdateRangedAttackState();
-                    break;
-            }
-        }
-        
 
         elapsedTime = -Time.deltaTime;
 
@@ -132,7 +123,7 @@ public class EnemyAI : MonoBehaviour
     {
         agent.stoppingDistance = rangedAttackDistance;
         nextDestination = player.transform.position;
-        
+
         if (distanceToPlayer <= rangedAttackDistance)
         {
             currentState = FSMStates.RangedAttack;
@@ -145,8 +136,9 @@ public class EnemyAI : MonoBehaviour
         {
             currentState = FSMStates.Patrol;
         }
+
         FaceTarget(nextDestination);
-        anim.SetInteger("animState", 5);
+        anim.SetInteger("animState", 4);
         EnemyShoot();
     }
 
@@ -162,10 +154,10 @@ public class EnemyAI : MonoBehaviour
         currentState = FSMStates.Patrol;
         FindNextPoint();
     }
-    
+
     private void UpdateDeadState()
     {
-        anim.SetInteger("animState", 4);
+        anim.SetInteger("animState", 5);
         deadTransform = gameObject.transform;
         isDead = true;
         Destroy(gameObject, 3);
@@ -173,10 +165,9 @@ public class EnemyAI : MonoBehaviour
 
     private void UpdateAttackState()
     {
-
-        // agent.stoppingDistance = attackDistance;
+        agent.stoppingDistance = attackDistance;
         nextDestination = player.transform.position;
-        
+
         if (distanceToPlayer <= attackDistance)
         {
             currentState = FSMStates.Attack;
@@ -189,28 +180,23 @@ public class EnemyAI : MonoBehaviour
         {
             currentState = FSMStates.Patrol;
         }
+
         FaceTarget(nextDestination);
         anim.SetInteger("animState", 3);
         EnemyMeleeAttack();
-        
     }
 
     private void EnemyMeleeAttack()
     {
-        var playerHealth = player.GetComponent<PlayerHealth>();
-        if (weaponEdge.CompareTag("Player"))
-        {
-            playerHealth.TakeDamage(enemyMeleeDamage);
-            AudioSource.PlayClipAtPoint(hitFX, weapon.transform.position);
-        }
+        weapon.GetComponent<WeaponHit>().DamagePlayer();
     }
 
     private void UpdateChaseState()
     {
         anim.SetInteger("animState", 2);
-        
+
         agent.stoppingDistance = attackDistance;
-        
+
         agent.speed = 5;
 
         nextDestination = player.transform.position;
@@ -233,10 +219,10 @@ public class EnemyAI : MonoBehaviour
         anim.SetInteger("animState", 1);
 
         agent.stoppingDistance = 0;
-        
+
         agent.speed = 3.5f;
 
-        if (Vector3.Distance(transform.position, nextDestination) < 1)
+        if (Vector3.Distance(transform.position, nextDestination) <= 2)
         {
             FindNextPoint();
         }
@@ -246,7 +232,6 @@ public class EnemyAI : MonoBehaviour
         }
 
         FaceTarget(nextDestination);
-
         agent.SetDestination(nextDestination);
     }
 
@@ -254,7 +239,7 @@ public class EnemyAI : MonoBehaviour
     {
         Vector3 directionToTarget = (target - transform.position).normalized;
         directionToTarget.y = 0;
-        
+
         Quaternion lookRotation = Quaternion.LookRotation(directionToTarget);
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, 10 * Time.deltaTime);
     }
@@ -268,19 +253,38 @@ public class EnemyAI : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position + new Vector3(0, 5, 0), attackDistance);
+        if (enemyType == AttackType.Melee)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position + new Vector3(0, 0, 0), attackDistance);
 
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position + new Vector3(0, 5, 0), chaseDistance);
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(transform.position + new Vector3(0, 0, 0), chaseDistance);
 
-        Vector3 frontRayPoint = enemyEyes.position + (enemyEyes.forward * chaseDistance);
-        Vector3 leftRayPoint = Quaternion.Euler(0, FOV * 0.5f, 0) * frontRayPoint;
-        Vector3 rightRayPoint = Quaternion.Euler(0, -FOV * 0.5f, 0) * frontRayPoint;
-        
-        Debug.DrawLine(enemyEyes.position, frontRayPoint, Color.cyan);
-        Debug.DrawLine(enemyEyes.position, leftRayPoint, Color.yellow);
-        Debug.DrawLine(enemyEyes.position, rightRayPoint, Color.yellow);
+            Vector3 frontRayPoint = enemyEyes.position + (enemyEyes.forward * chaseDistance);
+            Vector3 leftRayPoint = Quaternion.Euler(0, FOV * 0.5f, 0) * frontRayPoint;
+            Vector3 rightRayPoint = Quaternion.Euler(0, -FOV * 0.5f, 0) * frontRayPoint;
+
+            Debug.DrawLine(enemyEyes.position, frontRayPoint, Color.cyan);
+            Debug.DrawLine(enemyEyes.position, leftRayPoint, Color.yellow);
+            Debug.DrawLine(enemyEyes.position, rightRayPoint, Color.yellow);
+        }
+        else if (enemyType == AttackType.Ranged)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position + new Vector3(0, 0, 0), rangedAttackDistance);
+
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(transform.position + new Vector3(0, 0, 0), rangedChaseDistance);
+
+            Vector3 frontRayPoint = enemyEyes.position + (enemyEyes.forward * rangedChaseDistance);
+            Vector3 leftRayPoint = Quaternion.Euler(0, FOV * 0.5f, 0) * frontRayPoint;
+            Vector3 rightRayPoint = Quaternion.Euler(0, -FOV * 0.5f, 0) * frontRayPoint;
+
+            Debug.DrawLine(enemyEyes.position, frontRayPoint, Color.cyan);
+            Debug.DrawLine(enemyEyes.position, leftRayPoint, Color.yellow);
+            Debug.DrawLine(enemyEyes.position, rightRayPoint, Color.yellow);
+        }
     }
 
     // void EnemySpellCast()
@@ -328,10 +332,11 @@ public class EnemyAI : MonoBehaviour
                 {
                     return true;
                 }
-                
             }
+
             return false;
         }
+
         return false;
     }
 }
