@@ -1765,7 +1765,6 @@ GameObject:
   - component: {fileID: 2596359912304423939}
   - component: {fileID: 8279924269396651641}
   - component: {fileID: 1231624096513183209}
-  - component: {fileID: 3232244510027728700}
   - component: {fileID: 1482484922}
   - component: {fileID: 1482484926}
   - component: {fileID: 1482484927}
@@ -1830,35 +1829,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 2, y: 2.3, z: 0.4}
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &3232244510027728700
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3405793587265826489}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0afd25a03969b7a4ca67859239363291, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentState: 0
-  enemyType: 0
-  enemySpeed: 5
-  attackDistance: 5
-  chaseDistance: 10
-  weapon: {fileID: 0}
-  enemyMeleeDamage: 30
-  hitFX: {fileID: 0}
-  shootFX: {fileID: 0}
-  arrows: {fileID: 0}
-  rangedAttackDistance: 15
-  rangedChaseDistance: 25
-  shootRate: 2
-  player: {fileID: 3316431000907471257, guid: 9d20b4daa7dfa6748854e5c012dcccf0, type: 3}
-  deadVFX: {fileID: 0}
-  enemyEyes: {fileID: 0}
-  FOV: 45
 --- !u!114 &1482484922
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1879,12 +1849,12 @@ MonoBehaviour:
   weapon: {fileID: 5839811163180058102}
   enemyMeleeDamage: 1
   hitFX: {fileID: 0}
-  shootFX: {fileID: 0}
+  shootFX: {fileID: 8300000, guid: 2201154bb7fb8cc4abf74ef597c3e067, type: 3}
   arrows: {fileID: 0}
   rangedAttackDistance: 15
   rangedChaseDistance: 25
   shootRate: 2
-  player: {fileID: 0}
+  player: {fileID: 3316431000907471257, guid: 9d20b4daa7dfa6748854e5c012dcccf0, type: 3}
   deadVFX: {fileID: 0}
   enemyEyes: {fileID: 0}
   FOV: 45
