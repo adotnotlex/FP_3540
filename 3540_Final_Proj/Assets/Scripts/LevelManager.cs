@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class LevelManager : MonoBehaviour
 {
     public static bool isGameOver;
-    public string nextLevel;
+    public string nextLevel = "Village";
     public Text gameText;
     public static GameObject Player;
 
@@ -32,9 +32,11 @@ public class LevelManager : MonoBehaviour
         gameText.text = "YOU WIN!";
         gameText.color = Color.green;
         gameText.gameObject.SetActive(true);
+        Time.timeScale = 0f;
         if(!string.IsNullOrEmpty(nextLevel))
         {
-            Invoke("LoadNextLevel", 2);
+            Invoke("LoadNextLevel", 0);
+            Time.timeScale = 1f;
         }
     }
 
