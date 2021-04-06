@@ -11,20 +11,24 @@ public class ShootProjectile : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetButtonDown("Fire1"))
+        if(!PauseMenuBehavior.isGamePaused)
         {
-            
-            GameObject projectile = Instantiate(projectilePrefab, 
-                transform.position + transform.forward, transform.rotation) as GameObject;
+            if(Input.GetButtonDown("Fire1"))
+            {
+                
+                GameObject projectile = Instantiate(projectilePrefab, 
+                    transform.position + transform.forward, transform.rotation) as GameObject;
 
-            Rigidbody rb = projectile.GetComponent<Rigidbody>();
+                Rigidbody rb = projectile.GetComponent<Rigidbody>();
 
-            rb.AddForce(transform.forward * projectileSpeed, ForceMode.VelocityChange);
+                rb.AddForce(transform.forward * projectileSpeed, ForceMode.VelocityChange);
 
-            projectile.transform.SetParent(
-                GameObject.FindGameObjectWithTag("ProjectileParent").transform);
+                projectile.transform.SetParent(
+                    GameObject.FindGameObjectWithTag("ProjectileParent").transform);
 
-            AudioSource.PlayClipAtPoint(shootSFX, transform.position);
+                AudioSource.PlayClipAtPoint(shootSFX, transform.position);
+            }
         }
+        
     }
 }
