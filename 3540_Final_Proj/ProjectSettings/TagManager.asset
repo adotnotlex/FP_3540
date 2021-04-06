@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - ProjectileParent
+  - Enemy
+  - WanderPoint
+  - Projectile
+  - Weapon
   layers:
   - Default
   - TransparentFX
