@@ -32,13 +32,14 @@ public class EnemyAI : MonoBehaviour
     private EnemyHealth enemyHealth;
     private int health;
     public float enemySpeed = 5;
-    public float attackDistance = 2;
+    public float attackDistance = 7;
     public float chaseDistance = 10;
+    public float strikeDistance = 5;
 
     // Melee Enemy Variables
     public GameObject weapon;
     // private Collider weaponEdge;
-    public int enemyMeleeDamage = 1;
+    public int enemyMeleeDamage = 20;
     public AudioClip hitFX;
 
     // Ranged Enemy Variables
@@ -79,11 +80,9 @@ public class EnemyAI : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         wanderPoints = GameObject.FindGameObjectsWithTag("WanderPoint");
         anim = GetComponent<Animator>();
-        // wandTip = GameObject.FindGameObjectWithTag("WandTip");
         enemyHealth = GetComponent<EnemyHealth>();
         health = enemyHealth.currentHealth;
         agent = GetComponent<NavMeshAgent>();
-        // weaponEdge = weapon.GetComponent<Collider>();
         Initialize();
     }
 
@@ -165,12 +164,25 @@ public class EnemyAI : MonoBehaviour
 
     private void UpdateAttackState()
     {
-        agent.stoppingDistance = attackDistance;
-        nextDestination = player.transform.position;
+        
 
         if (distanceToPlayer <= attackDistance)
         {
             currentState = FSMStates.Attack;
+            agent.stoppingDistance = strikeDistance;
+            nextDestination = player.transform.position;
+            FaceTarget(nextDestination);
+            agent.SetDestination(nextDestination);
+
+            if (distanceToPlayer <= strikeDistance)
+            {
+                anim.SetInteger("animState", 3);
+                // Time.timeScale = 0.5f;
+                // EnemyMeleeAttack();
+            }
+            // anim.SetInteger("animState", 3);
+            // Time.timeScale = 0.5f;
+            // EnemyMeleeAttack();
         }
         else if (distanceToPlayer > attackDistance && distanceToPlayer <= chaseDistance)
         {
@@ -181,15 +193,13 @@ public class EnemyAI : MonoBehaviour
             currentState = FSMStates.Patrol;
         }
 
-        FaceTarget(nextDestination);
-        anim.SetInteger("animState", 3);
-        EnemyMeleeAttack();
+        
     }
 
-    private void EnemyMeleeAttack()
-    {
-        weapon.GetComponent<WeaponHit>().DamagePlayer();
-    }
+    // private void EnemyMeleeAttack()
+    // {
+    //     weapon.GetComponent<WeaponHit>().DamagePlayer();
+    // }
 
     private void UpdateChaseState()
     {
@@ -286,34 +296,6 @@ public class EnemyAI : MonoBehaviour
             Debug.DrawLine(enemyEyes.position, rightRayPoint, Color.yellow);
         }
     }
-
-    // void EnemySpellCast()
-    // {
-    //     if (!isDead)
-    //     {
-    //         if (elapsedTime >= shootRate)
-    //         { 
-    //             var animDuration = anim.GetCurrentAnimatorStateInfo(0).length;
-    //             Invoke("SpellCasting", animDuration);
-    //             elapsedTime = 0.0f;
-    //         }
-    //     }
-    //     
-    // }
-
-    // void SpellCasting()
-    // {
-    //     GameObject spellProjectile = arrows;
-    //     // Instantiate(spellProjectile, wandTip.transform.position, wandTip.transform.rotation);
-    //     
-    //     var projectile = Instantiate(spellProjectile, wandTip.transform.position 
-    //                                                    + wandTip.transform.forward, wandTip.transform.rotation);
-    //     Rigidbody p = projectile.GetComponent<Rigidbody>();
-    //             
-    //     p.AddForce(transform.forward * 100, ForceMode.Impulse);
-    //     projectile.transform.SetParent(GameObject.FindGameObjectWithTag("ProjectileParent").transform);
-    //     AudioSource.PlayClipAtPoint(shootFX, wandTip.transform.position);
-    // }
 
     private void OnDestroy()
     {

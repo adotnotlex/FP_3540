@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +9,6 @@ public class EnemyHealth : MonoBehaviour
     
     int startingHealth = 100;
     public int currentHealth;
-    public AudioClip playerDeathSFX;
     public Slider healthSlider;
 
     void Awake() 
@@ -21,7 +21,6 @@ public class EnemyHealth : MonoBehaviour
         currentHealth = startingHealth;
         healthSlider.value = startingHealth;
     }
-
 
     public void TakeDamage(int damageAmount) 
     {

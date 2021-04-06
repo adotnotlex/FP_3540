@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,11 +8,19 @@ public class PlayerHealth : MonoBehaviour
 {
     public int startingHealth = 100;
     public Slider healthSlider;
-    int currentHealth;
+    public int currentHealth;
+    public GameObject enemy;
+    private int enemyDamageAmount;
 
     void Start()
     {
         currentHealth = startingHealth;
+        healthSlider.value = currentHealth;
+        enemyDamageAmount = enemy.GetComponent<EnemyAI>().enemyMeleeDamage;
+    }
+
+    private void Update()
+    {
         healthSlider.value = currentHealth;
     }
 
@@ -34,6 +43,18 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = Mathf.Clamp(currentHealth + healingAmount, 0, 100);
         healthSlider.value = currentHealth;
     }
+    
+    private void OnCollisionEnter(Collision other)
+    {
+        print("Collision: " + other.gameObject.tag);
+        
+        if (other.gameObject.CompareTag("Weapon"))
+        {
+            TakeDamage(enemyDamageAmount);
+        }
+    }
+
+
 
     void PlayerDies()
     {
