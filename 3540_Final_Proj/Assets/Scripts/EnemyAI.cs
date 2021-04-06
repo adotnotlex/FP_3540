@@ -44,7 +44,7 @@ public class EnemyAI : MonoBehaviour
 
     // Ranged Enemy Variables
     public AudioClip shootFX;
-    public GameObject arrows;
+    // public GameObject arrows;
     public float rangedAttackDistance = 15;
 
     public float rangedChaseDistance = 25;
@@ -173,7 +173,6 @@ public class EnemyAI : MonoBehaviour
             nextDestination = player.transform.position;
             FaceTarget(nextDestination);
             agent.SetDestination(nextDestination);
-
             if (distanceToPlayer <= strikeDistance)
             {
                 anim.SetInteger("animState", 3);
@@ -256,7 +255,7 @@ public class EnemyAI : MonoBehaviour
 
     void FindNextPoint()
     {
-        nextDestination = wanderPoints[currentDestinationIndex].transform.position;
+        nextDestination = wanderPoints[UnityEngine.Random.Range(currentDestinationIndex, wanderPoints.Length)].transform.position;
         currentDestinationIndex = (currentDestinationIndex + 1) % wanderPoints.Length;
         agent.SetDestination(nextDestination);
     }

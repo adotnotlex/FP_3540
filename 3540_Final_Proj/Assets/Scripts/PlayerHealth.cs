@@ -50,6 +50,7 @@ public class PlayerHealth : MonoBehaviour
         
         if (other.gameObject.CompareTag("Weapon"))
         {
+            AudioSource.PlayClipAtPoint(enemy.GetComponent<EnemyAI>().hitFX, enemy.transform.position);
             TakeDamage(enemyDamageAmount);
         }
     }
