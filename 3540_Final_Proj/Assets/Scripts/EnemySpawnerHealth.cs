@@ -1,15 +1,14 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnemyHealth : MonoBehaviour
+public class EnemySpawnerHealth : MonoBehaviour
 {
-    
-    int startingHealth = 100;
+    int startingHealth = 500;
     public int currentHealth;
     public Slider healthSlider;
+    public GameObject enemySpawner;
 
     void Awake() 
     {
@@ -29,12 +28,11 @@ public class EnemyHealth : MonoBehaviour
             currentHealth -= damageAmount;
             healthSlider.value = currentHealth;
         }
-        /*
+        
         if(currentHealth <= 0)
         {
-            
+            Destroy(enemySpawner);
         }
-        */
 
     }
 
@@ -42,8 +40,7 @@ public class EnemyHealth : MonoBehaviour
     {
         if(collision.gameObject.CompareTag("Projectile"))
         {
-            TakeDamage(50);
+            TakeDamage(25);
         }
     }
-
 }
