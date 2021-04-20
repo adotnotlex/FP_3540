@@ -298,7 +298,7 @@ public class EnemyAI : MonoBehaviour
 
     private void OnDestroy()
     {
-        //Instantiate(deadVFX, deadTransform.position, deadTransform.rotation);
+        Instantiate(deadVFX, deadTransform.position, deadTransform.rotation);
     }
 
     bool IsPlayerInClearFOV()

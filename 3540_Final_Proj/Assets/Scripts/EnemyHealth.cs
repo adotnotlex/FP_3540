@@ -29,12 +29,11 @@ public class EnemyHealth : MonoBehaviour
             currentHealth -= damageAmount;
             healthSlider.value = currentHealth;
         }
-        /*
+        
         if(currentHealth <= 0)
         {
             
         }
-        */
 
     }
 
