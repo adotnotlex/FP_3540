@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.5397387, g: 0.61669874, b: 0.7464954, a: 1}
+  m_IndirectSpecularColor: {r: 0.5398445, g: 0.6167105, b: 0.74652267, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3183,6 +3183,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4219521856954997860, guid: 7914bda0b23e2b04db6dbfc9d54c02bd, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: c267a09e073fb494bb30346229c66cab, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7914bda0b23e2b04db6dbfc9d54c02bd, type: 3}
 --- !u!1001 &903155097
@@ -6714,6 +6718,10 @@ PrefabInstance:
       propertyPath: gameText
       value: 
       objectReference: {fileID: 1860983755}
+    - target: {fileID: 6117141621533282707, guid: 1ea7a847060e0f34f907a83539e56fc0, type: 3}
+      propertyPath: nextLevel
+      value: '"End"'
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ea7a847060e0f34f907a83539e56fc0, type: 3}
 --- !u!1001 &7497524833579568148

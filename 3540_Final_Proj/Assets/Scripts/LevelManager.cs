@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class LevelManager : MonoBehaviour
 {
     public static bool isGameOver;
-    public string nextLevel = "Village";
+    public string nextLevel;
     public Text gameText;
     public static GameObject Player;
 
@@ -20,7 +20,7 @@ public class LevelManager : MonoBehaviour
     public void LevelLost()
     {
         isGameOver = true;
-        gameText.text = "GAME OVER!";
+        gameText.text = "YOU FAILED!";
         gameText.color = Color.red;
         gameText.gameObject.SetActive(true);
         Invoke("LoadCurrentLevel", 2);
@@ -29,7 +29,7 @@ public class LevelManager : MonoBehaviour
     public void LevelBeat()
     {
         isGameOver = true;
-        gameText.text = "YOU WIN!";
+        gameText.text = "YOU CRUSHED THEM!";
         gameText.color = Color.green;
         gameText.gameObject.SetActive(true);
         Time.timeScale = 0f;

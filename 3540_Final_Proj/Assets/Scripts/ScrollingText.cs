@@ -6,7 +6,7 @@ public class ScrollingText : MonoBehaviour
 {
     private bool isScrolling; // We'll use this for debugging
     public float rotation;   // Default 55deg, but read in from canvas 
-    public float speed;      //Speed at which the text is scrolling
+    public float speed = 0.5f;      //Speed at which the text is scrolling
 
     // Start the scrolling effect on load
     void Start () {
