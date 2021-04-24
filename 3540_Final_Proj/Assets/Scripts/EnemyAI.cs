@@ -5,17 +5,20 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using Random = System.Random;
 using UnityEngine.AI;
+using UnityEngine.ProBuilder;
 
 public class EnemyAI : MonoBehaviour
 {
     public enum FSMStates
     {
-        Idle,
+        Loot,
         Patrol,
         Chase,
         Attack,
         Dead,
-        RangedAttack
+        RangedAttack,
+        Store,
+        RangedChase
     }
 
     public enum AttackType
@@ -34,27 +37,29 @@ public class EnemyAI : MonoBehaviour
     public float enemySpeed = 5;
     public float attackDistance = 7;
     public float chaseDistance = 10;
-    public float strikeDistance = 5;
+    public float strikeDistance = 2;
+    private Boolean beenHit = false;
+    private Boolean weaponThrown = false;
 
     // Melee Enemy Variables
     public GameObject weapon;
-    // private Collider weaponEdge;
-    public int enemyMeleeDamage = 20;
+    public int enemyDamage = 20;
     public AudioClip hitFX;
 
     // Ranged Enemy Variables
     public AudioClip shootFX;
     // public GameObject arrows;
-    public float rangedAttackDistance = 15;
+    public float rangedAttackDistance = 20;
+    public float rangedChaseDistance = 30;
 
-    public float rangedChaseDistance = 25;
-
-    // public GameObject wandTip;
-    public float shootRate = 2;
+    public GameObject hand;
+    public GameObject rShoulder;
+    public float shootRate = 4.5f;
     private float elapsedTime = 0;
 
     // Enemy Navigation
     private Vector3 nextDestination;
+    private Vector3 nextLootDestination;
     private int currentDestinationIndex = 0;
     private NavMeshAgent agent;
     private GameObject[] wanderPoints;
@@ -64,9 +69,9 @@ public class EnemyAI : MonoBehaviour
     public GameObject player;
 
     // Enemy Death
-    public GameObject deadVFX;
-    private Transform deadTransform;
-    private bool isDead;
+    // public GameObject deadVFX;
+    // private Transform deadTransform;
+    // private bool isDead;
 
     // Enemy Vision
     public Transform enemyEyes;
@@ -76,13 +81,14 @@ public class EnemyAI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        isDead = false;
+        // isDead = false;
         player = GameObject.FindGameObjectWithTag("Player");
         wanderPoints = GameObject.FindGameObjectsWithTag("WanderPoint");
         anim = GetComponent<Animator>();
         enemyHealth = GetComponent<EnemyHealth>();
         health = enemyHealth.currentHealth;
         agent = GetComponent<NavMeshAgent>();
+        enemyDamage = 20;
         Initialize();
     }
 
@@ -95,6 +101,9 @@ public class EnemyAI : MonoBehaviour
 
         switch (currentState)
         {
+            case FSMStates.Loot:
+                UpdateLootState();
+                break;
             case FSMStates.Patrol:
                 UpdatePatrolState();
                 break;
@@ -107,10 +116,19 @@ public class EnemyAI : MonoBehaviour
             case FSMStates.Dead:
                 UpdateDeadState();
                 break;
+            case FSMStates.Store:
+                UpdateStoreState();
+                break;
+            case FSMStates.RangedAttack:
+                UpdateRangedAttackState();
+                break;
+            case FSMStates.RangedChase:
+                UpdateRangedChaseState();
+                break;
         }
 
 
-        elapsedTime = -Time.deltaTime;
+        elapsedTime += Time.deltaTime;
 
         if (health <= 0)
         {
@@ -118,8 +136,91 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    private void UpdateRangedChaseState()
+    {
+        anim.SetInteger("animState", 2);
+
+        agent.stoppingDistance = rangedAttackDistance;
+
+        agent.speed = 5;
+
+        nextDestination = player.transform.position;
+        if (distanceToPlayer <= rangedAttackDistance)
+        {
+            currentState = FSMStates.RangedAttack;
+        }
+        else if (distanceToPlayer > rangedChaseDistance)
+        {
+            currentState = FSMStates.Patrol;
+        }
+
+        FaceTarget(nextDestination);
+        agent.SetDestination(nextDestination);
+    }
+
+    private void UpdateStoreState()
+    {
+        anim.SetInteger("animState", 1);
+
+        agent.stoppingDistance = 0;
+
+        agent.speed = 3.5f;
+
+        if (Vector3.Distance(transform.position, nextDestination) <= 2)
+        {
+            currentState = FSMStates.Loot;
+        }
+        else if (distanceToPlayer <= chaseDistance && IsPlayerInClearFOV())
+        {
+            currentState = FSMStates.Chase;
+        }
+        else if (beenHit)
+        {
+            nextDestination = player.transform.position;
+            FaceTarget(nextDestination);
+            agent.SetDestination(nextDestination);
+            agent.speed = 5.0f;
+            anim.SetInteger("animState", 2);
+        }
+
+        FaceTarget(nextDestination);
+        agent.SetDestination(nextDestination);
+    }
+
+    // ReSharper disable Unity.PerformanceAnalysis
+    private void UpdateLootState()
+    {
+        anim.SetInteger("animState", 1);
+
+        agent.stoppingDistance = 0;
+
+        agent.speed = 3.5f;
+
+        if (Vector3.Distance(transform.position, nextLootDestination) <= 2)
+        {
+            currentState = FSMStates.Store;
+        }
+        else if (distanceToPlayer <= chaseDistance && IsPlayerInClearFOV())
+        {
+            currentState = FSMStates.Chase;
+        }
+        else if (beenHit)
+        {
+            nextDestination = player.transform.position;
+            FaceTarget(nextDestination);
+            agent.SetDestination(nextDestination);
+            agent.speed = 5.0f;
+            anim.SetInteger("animState", 2);
+        }
+
+        FaceTarget(nextLootDestination);
+        agent.SetDestination(nextLootDestination);
+    }
+
+    // ReSharper disable Unity.PerformanceAnalysis
     private void UpdateRangedAttackState()
     {
+        anim.SetInteger("animState", 4);
         agent.stoppingDistance = rangedAttackDistance;
         nextDestination = player.transform.position;
 
@@ -137,29 +238,77 @@ public class EnemyAI : MonoBehaviour
         }
 
         FaceTarget(nextDestination);
-        anim.SetInteger("animState", 4);
+        
         EnemyShoot();
     }
 
     private void EnemyShoot()
     {
         // Fire projectiles at Player
-        throw new NotImplementedException();
+        if (elapsedTime >= shootRate)
+        {
+            if (!weaponThrown && Vector3.Distance(hand.transform.position, weapon.transform.position) < 1)
+            {
+                Rigidbody rb = weapon.GetComponent<Rigidbody>();
+                BoxCollider c = weapon.GetComponent<BoxCollider>();
+                c.size = Vector3.one;
+                rb.freezeRotation = false;
+                var aimTarget = nextDestination;
+                aimTarget.y = 0;
+                rb.velocity = (aimTarget - transform.position).normalized * 5f;
+                rb.useGravity = true;
+                FaceTarget(nextDestination);
+                // weapon.transform.SetParent(GameObject.FindGameObjectWithTag("EnemyProjectileParent").transform);
+                AudioSource.PlayClipAtPoint(shootFX, weapon.transform.position);
+                elapsedTime = 0;
+                weaponThrown = true;
+                weapon.transform.position = new Vector3(1000, 1000, 1000);
+                rb.useGravity = false;
+            }
+            else
+            {
+                var throwableAxe = Instantiate(weapon, rShoulder.transform.position + transform.forward, rShoulder.transform.rotation) as GameObject;
+                Rigidbody rb = throwableAxe.GetComponent<Rigidbody>();
+                BoxCollider c = throwableAxe.GetComponent<BoxCollider>();
+                c.size = Vector3.one;
+                rb.freezeRotation = false;
+                rb.useGravity = false;
+                var aimTarget = nextDestination;
+                aimTarget.y = 0;
+                rb.velocity = (aimTarget - transform.position).normalized * 5f;
+                FaceTarget(nextDestination);
+                throwableAxe.transform.SetParent(GameObject.FindGameObjectWithTag("EnemyProjectileParent").transform);
+                AudioSource.PlayClipAtPoint(shootFX, transform.position);
+                elapsedTime = 0;  
+            }
+            
+        }
+        
     }
 
 
     private void Initialize()
     {
-        currentState = FSMStates.Patrol;
-        FindNextPoint();
+        if (enemyType == AttackType.Melee)
+        {
+            currentState = FSMStates.Loot;
+            Loot();
+        }
+
+        if (enemyType == AttackType.Ranged)
+        {
+            currentState = FSMStates.Patrol;
+            FindNextPoint();
+        }
+        
     }
 
     private void UpdateDeadState()
     {
         anim.SetInteger("animState", 5);
-        deadTransform = gameObject.transform;
-        isDead = true;
-        Destroy(gameObject, 3);
+        // deadTransform = gameObject.transform;
+        // isDead = true;
+        Destroy(gameObject, 2);
     }
 
     private void UpdateAttackState()
@@ -173,15 +322,10 @@ public class EnemyAI : MonoBehaviour
             nextDestination = player.transform.position;
             FaceTarget(nextDestination);
             agent.SetDestination(nextDestination);
-            if (distanceToPlayer <= strikeDistance)
+            if (distanceToPlayer < strikeDistance)
             {
                 anim.SetInteger("animState", 3);
-                // Time.timeScale = 0.5f;
-                // EnemyMeleeAttack();
             }
-            // anim.SetInteger("animState", 3);
-            // Time.timeScale = 0.5f;
-            // EnemyMeleeAttack();
         }
         else if (distanceToPlayer > attackDistance && distanceToPlayer <= chaseDistance)
         {
@@ -194,11 +338,6 @@ public class EnemyAI : MonoBehaviour
 
         
     }
-
-    // private void EnemyMeleeAttack()
-    // {
-    //     weapon.GetComponent<WeaponHit>().DamagePlayer();
-    // }
 
     private void UpdateChaseState()
     {
@@ -230,18 +369,30 @@ public class EnemyAI : MonoBehaviour
         agent.stoppingDistance = 0;
 
         agent.speed = 3.5f;
-
-        if (Vector3.Distance(transform.position, nextDestination) <= 2)
+        
+        if (enemyType == AttackType.Ranged)
         {
-            FindNextPoint();
-        }
-        else if (distanceToPlayer <= chaseDistance && IsPlayerInClearFOV())
-        {
-            currentState = FSMStates.Chase;
+            if (Vector3.Distance(transform.position, nextDestination) <= 2)
+            {
+                FindNextPoint();
+            }
+            else if (distanceToPlayer <= chaseDistance && IsPlayerInClearFOV())
+            {
+                currentState = FSMStates.RangedChase;
+            }
+            else if (beenHit)
+            {
+                nextDestination = player.transform.position;
+                FaceTarget(nextDestination);
+                agent.SetDestination(nextDestination);
+                agent.speed = 5.0f;
+                anim.SetInteger("animState", 2);
+            }
+
+            FaceTarget(nextDestination);
+            agent.SetDestination(nextDestination);
         }
 
-        FaceTarget(nextDestination);
-        agent.SetDestination(nextDestination);
     }
 
     private void FaceTarget(Vector3 target)
@@ -257,6 +408,23 @@ public class EnemyAI : MonoBehaviour
     {
         nextDestination = wanderPoints[UnityEngine.Random.Range(currentDestinationIndex, wanderPoints.Length)].transform.position;
         currentDestinationIndex = (currentDestinationIndex + 1) % wanderPoints.Length;
+        agent.SetDestination(nextDestination);
+    }
+
+    // ReSharper disable Unity.PerformanceAnalysis
+    void Loot()
+    {
+        var allPots = GameObject.FindGameObjectsWithTag("Pot");
+        nextLootDestination = allPots[UnityEngine.Random.Range(currentDestinationIndex, allPots.Length)].transform.position;
+        currentDestinationIndex = (currentDestinationIndex + 1) % allPots.Length;
+        agent.SetDestination(nextLootDestination);
+    }
+
+    void StoreLoot()
+    {
+        var allStores = GameObject.FindGameObjectsWithTag("Respawn");
+        nextDestination = allStores[UnityEngine.Random.Range(currentDestinationIndex, allStores.Length)].transform.position;
+        currentDestinationIndex = (currentDestinationIndex + 1) % allStores.Length;
         agent.SetDestination(nextDestination);
     }
 
@@ -296,10 +464,10 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-        Instantiate(deadVFX, deadTransform.position, deadTransform.rotation);
-    }
+    // private void OnDestroy()
+    // {
+    //     Instantiate(deadVFX, deadTransform.position, deadTransform.rotation);
+    // }
 
     bool IsPlayerInClearFOV()
     {
@@ -319,5 +487,13 @@ public class EnemyAI : MonoBehaviour
         }
 
         return false;
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.CompareTag("Projectile"))
+        {
+            beenHit = true;
+        }
     }
 }

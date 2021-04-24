@@ -3656,9 +3656,10 @@ MonoBehaviour:
   shootFX: {fileID: 8300000, guid: 2201154bb7fb8cc4abf74ef597c3e067, type: 3}
   rangedAttackDistance: 15
   rangedChaseDistance: 25
+  hand: {fileID: 2336289475178588030}
+  rShoulder: {fileID: 7426923729569704250}
   shootRate: 2
-  player: {fileID: 0}
-  deadVFX: {fileID: 7149259022491354345, guid: 2b3ee1dacd37540b49d9a959d03ea213, type: 3}
+  player: {fileID: 3341412547184632357, guid: 7914bda0b23e2b04db6dbfc9d54c02bd, type: 3}
   enemyEyes: {fileID: 3452141734914394019}
   FOV: 45
 --- !u!195 &6581611586203030663
@@ -3994,13 +3995,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f5a51e637558ff04895a354af9c4b59f, type: 3}
---- !u!4 &746957151235637777 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 475058, guid: f5a51e637558ff04895a354af9c4b59f, type: 3}
-  m_PrefabInstance: {fileID: 746957151235325347}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &746957151235456463 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 131180, guid: f5a51e637558ff04895a354af9c4b59f, type: 3}
+  m_PrefabInstance: {fileID: 746957151235325347}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &746957151235637777 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 475058, guid: f5a51e637558ff04895a354af9c4b59f, type: 3}
   m_PrefabInstance: {fileID: 746957151235325347}
   m_PrefabAsset: {fileID: 0}

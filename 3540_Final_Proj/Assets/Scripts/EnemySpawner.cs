@@ -37,6 +37,6 @@ public class EnemySpawner : MonoBehaviour
         enemyPosition.z = Random.Range(zMin, zMax);
         enemyPosition += transform.position;
         GameObject spawnedEnemy = Instantiate(enemyPrefab, enemyPosition, transform.rotation) as GameObject;
-        spawnedEnemy.transform.parent = gameObject.transform;
+        //spawnedEnemy.transform.parent = gameObject.transform;
     }
 }
