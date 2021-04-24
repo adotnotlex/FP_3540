@@ -940,9 +940,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
+  m_MaxValue: 100
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 100
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -3656,9 +3656,10 @@ MonoBehaviour:
   shootFX: {fileID: 8300000, guid: 2201154bb7fb8cc4abf74ef597c3e067, type: 3}
   rangedAttackDistance: 15
   rangedChaseDistance: 25
+  hand: {fileID: 2336289475178588030}
+  rShoulder: {fileID: 7426923729569704250}
   shootRate: 2
-  player: {fileID: 0}
-  deadVFX: {fileID: 7149259022491354345, guid: 2b3ee1dacd37540b49d9a959d03ea213, type: 3}
+  player: {fileID: 3341412547184632357, guid: 7914bda0b23e2b04db6dbfc9d54c02bd, type: 3}
   enemyEyes: {fileID: 3452141734914394019}
   FOV: 45
 --- !u!195 &6581611586203030663

@@ -9,6 +9,8 @@ TagManager:
   - WanderPoint
   - Projectile
   - Weapon
+  - Pot
+  - EnemyProjectileParent
   layers:
   - Default
   - TransparentFX
