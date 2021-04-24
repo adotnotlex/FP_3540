@@ -1,0 +1,4 @@
+The build zip file was 52 MB in size. 
+Github won't allow for files above 25 MB in size.
+This was our solution. 
+https://drive.google.com/file/d/1Q6cj19Kxx7i1PzbLsQCmMnKY7u8TiYuo/view
