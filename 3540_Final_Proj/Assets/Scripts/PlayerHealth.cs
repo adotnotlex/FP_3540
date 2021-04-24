@@ -16,7 +16,7 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth = startingHealth;
         healthSlider.value = currentHealth;
-        enemyDamageAmount = enemy.GetComponent<EnemyAI>().enemyMeleeDamage;
+        enemyDamageAmount = enemy.GetComponent<EnemyAI>().enemyDamage;
     }
 
     private void Update()
